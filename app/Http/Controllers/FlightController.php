@@ -58,7 +58,9 @@ class FlightController extends Controller
                     if($flight['code_arrival'] == $arrival) {
                         $voli_trovati[] = [
                             'code_departure' => $flight['code_departure'],
+                            'name_departure' => $flight->departure['name'],
                             'code_arrival' => $flight['code_arrival'],
+                            'name_arrival' => $flight->arrival['name'],
                             'price' => $flight['price']
                         ];
                     } else {
@@ -70,8 +72,11 @@ class FlightController extends Controller
                                 // partenza, scalo, destinazione e la somma dei prezzi dei due voli
                                 $voli_trovati[] = [
                                     'code_departure' => $flight['code_departure'],
+                                    'name_departure' => $flight->departure['name'],
                                     'code_scalo' => $scalo['code_departure'],
+                                    'name_scalo' => $scalo->departure['name'],
                                     'code_arrival' => $scalo['code_arrival'],
+                                    'name_arrival' => $scalo->arrival['name'],
                                     'price' => $flight['price'] + $scalo['price']
                                 ];
                             }
@@ -81,25 +86,18 @@ class FlightController extends Controller
             }
             // l'array conterrà prima i voli diretti, se presenti, e poi quelli con scalo
     
+            // dd($voli_trovati);
             // controllo se sono stati trovati voli
             if(count($voli_trovati) != 0) {
                 // richiamo la funzione voloEconomico per trovare il volo
                 // più economico tra quelli trovati
                 $voloEconomico = $this->voloEconomico($voli_trovati);
-                $departure = Airport::where('code', $voloEconomico['code_departure'])->first();
-                $arrival = Airport::where('code', $voloEconomico['code_arrival'])->first();
-                // se è un volo con scalo
-                if(count($voloEconomico) == 4) {
-                    $scalo = Airport::where('code', $voloEconomico['code_scalo'])->first();
-                } else {
-                    $scalo = null;
-                }
             } else {
                 // se non sono stati trovati voli ritorno un array vuoto
                 $voloEconomico = [];
             }
 
-            return view('result', compact('voloEconomico', 'departure', 'arrival', 'scalo'));
+            return view('result', compact('voloEconomico'));
         }
     }
 }

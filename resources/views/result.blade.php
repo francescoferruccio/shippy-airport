@@ -7,11 +7,12 @@
         @endphp --}}
         @if ($voloEconomico)
             <h2>Ecco il volo più economico per te</h2>
-            <h3>Partenza da {{ $departure['name'] }} - {{ $voloEconomico['code_departure'] }}</h3>
-            @if ($scalo)
-                <h3>Scalo a {{ $scalo['name'] }} - {{ $voloEconomico['code_scalo'] }}</h3>            
+            <h3>Partenza da {{ $voloEconomico['name_departure'] }} - {{ $voloEconomico['code_departure'] }}</h3>
+            {{-- se c'è uno scalo --}}
+            @if (array_key_exists('code_scalo', $voloEconomico))
+                <h3>Scalo a {{ $voloEconomico['name_scalo'] }} - {{ $voloEconomico['code_scalo'] }}</h3>            
             @endif
-            <h3>Arrivo a {{ $arrival['name'] }} - {{ $voloEconomico['code_arrival'] }}</h3>
+            <h3>Arrivo a {{ $voloEconomico['name_arrival'] }} - {{ $voloEconomico['code_arrival'] }}</h3>
             <h3>Prezzo volo: {{ $voloEconomico['price'] }}</h3>
         @else
             <h3>Nessun volo trovato per la destinazione selezionata.</h3>
