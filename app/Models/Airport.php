@@ -12,6 +12,6 @@ class Airport extends Model
     protected $table = "airport";
 
     public function flights() {
-        return $this->hasMany(Flight::class);
+        return $this->hasMany(Flight::class, 'departure_id');
     }
 }
