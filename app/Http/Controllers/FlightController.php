@@ -16,7 +16,7 @@ class FlightController extends Controller
             // recupero i paramentri della richiesta
             $departure = $request['departure'];
             $arrival = $request['arrival'];
-            // recupero da db solo i voli che partono o arrivano agli aeroporti richiesti
+            // recupero da db solo i voli che partono dall'aeroporto richiesto
             $voli_in_partenza = Flight::where('code_departure', $departure)->get();
             $voli_totali = [];
             $voloEconomico = [];
@@ -34,21 +34,20 @@ class FlightController extends Controller
                         'price' => $volo['price']
                     ];
                 } else {
-                    // altrimenti ciclo gli scali
-                    $scali = $volo->arrival->flights;
+                    // altrimenti recupero i voli che partono dall'aeroporto di arrivo del volo precedente e arrivano alla destinazione richiesta
+                    $scali = $volo->arrival->flights->where('code_arrival', $arrival);
+                    // dd($scali);
+                    // li ciclo e pusho i dati dei voli combinati tra i risultati
                     foreach ($scali as $scalo) {
-                        // se lo scalo parte dall'aeroporto di arrivo del primo volo lo pusho tra i risultati
-                        if($scalo['code_arrival'] == $arrival) {
-                            $voli_totali[] = [
-                                'code_departure' => $volo['code_departure'],
-                                'name_departure' => $volo->departure['name'],
-                                'code_scalo' => $scalo['code_departure'],
-                                'name_scalo' => $scalo->departure['name'],
-                                'code_arrival' => $scalo['code_arrival'],
-                                'name_arrival' => $scalo->arrival['name'],
-                                'price' => $volo['price'] + $scalo['price']
-                            ];
-                        }
+                        $voli_totali[] = [
+                            'code_departure' => $volo['code_departure'],
+                            'name_departure' => $volo->departure['name'],
+                            'code_scalo' => $scalo['code_departure'],
+                            'name_scalo' => $scalo->departure['name'],
+                            'code_arrival' => $scalo['code_arrival'],
+                            'name_arrival' => $scalo->arrival['name'],
+                            'price' => $volo['price'] + $scalo['price']
+                        ];
                     }
                 }
             }
